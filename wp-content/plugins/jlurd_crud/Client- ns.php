@@ -22,13 +22,13 @@ function crudOperationsTable() {
   $charset_collate = $wpdb->get_charset_collate();
   $table_name = $wpdb->prefix . 'jlurd_tile_view_maker';
   $sql = "CREATE TABLE `$table_name` (
-  `user_id` int(50) NOT NULL AUTO_INCREMENT,
+  `tileview_id` int(50) NOT NULL AUTO_INCREMENT,
   `name` varchar(220) DEFAULT NULL,
   `position` varchar(220) DEFAULT NULL,
   `tile_row_number` int(150) DEFAULT NULL,
   `tile_column_number` int(150) DEFAULT NULL,
   `featured_photo` varchar(220) DEFAULT NULL,
-  PRIMARY KEY(user_id)
+  PRIMARY KEY(tileview_id)
   ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
   ";
   if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
@@ -60,6 +60,7 @@ function crudAdminPage() {
   }
 
   if (isset($_POST['uptsubmit'])) {
+   $user_id = get_current_user_id();
     $id = $_POST['uptid'];
     $name = $_POST['uptname'];
     $position = $_POST['uptposition'];
@@ -67,7 +68,7 @@ function crudAdminPage() {
     $upt_tile_column_number = $_POST['upt_tile_column_number'];
     $upt_position_featured_photo = $_POST['upt_position_featured_photo'];
     $today = date ('Y-m-d H:i:s');
-    $wpdb->query("UPDATE $table_name SET name='$name',position='$position',tile_row_number='$upt_tile_row_number',tile_column_number='$upt_tile_column_number',featured_photo='$upt_position_featured_photo',modified_date='$today'  WHERE user_id='$id'");
+    $wpdb->query("UPDATE $table_name SET name='$name',position='$position',tile_row_number='$upt_tile_row_number',tile_column_number='$upt_tile_column_number',featured_photo='$upt_position_featured_photo',modified_date='$today',modified_by_user_id='$user_id'  WHERE tileview_id='$id'");
     echo "<script>location.replace('admin.php?page=jlurd_crud/Client-+ns.php');</script>";
   }
 
@@ -77,7 +78,7 @@ function crudAdminPage() {
 
   if (isset($_GET['del'])) {
     $del_id = $_GET['del'];
-    $wpdb->query("DELETE FROM $table_name WHERE user_id='$del_id'");
+    $wpdb->query("DELETE FROM $table_name WHERE tileview_id='$del_id'");
     echo "<script>location.replace('admin.php?page=jlurd_crud/Client-+ns.php');</script>";
   }
   
@@ -113,13 +114,13 @@ function crudAdminPage() {
           foreach ($result as $print) {
             echo "
               <tr>
-                <td width='25%' style ='display:none;'>$print->user_id</td>
+                <td width='25%' style ='display:none;'>$print->tileview_id</td>
                 <td width='25%'>$print->name</td>
                 <td width='25%'>$print->position</td>
                 <td width='25%'>$print->tile_row_number</td>
                 <td width='25%'>$print->tile_column_number</td>
                 <td width='25%'> <img src = '$print->featured_photo' height='120px'></td>
-                <td width='25%'><a href='admin.php?page=jlurd_crud/Client-+ns.php&upt=$print->user_id'><button type='button'>UPDATE</button></a> <a href='admin.php?page=jlurd_crud/Client-+ns.php&del=$print->user_id'><button type='button'>DELETE</button></a></td>
+                <td width='25%'><a href='admin.php?page=jlurd_crud/Client-+ns.php&upt=$print->tileview_id'><button type='button'>UPDATE</button></a> <a href='admin.php?page=jlurd_crud/Client-+ns.php&del=$print->tileview_id'><button type='button'>DELETE</button></a></td>
               </tr>
             ";
           }
@@ -131,7 +132,7 @@ function crudAdminPage() {
     <?php
       if (isset($_GET['upt'])) {
         $upt_id = $_GET['upt'];
-        $result = $wpdb->get_results("SELECT * FROM $table_name WHERE user_id='$upt_id'");
+        $result = $wpdb->get_results("SELECT * FROM $table_name WHERE tileview_id='$upt_id'");
         foreach($result as $print) {
           $name = $print->name;
           $email = $print->email;
@@ -154,7 +155,7 @@ function crudAdminPage() {
           <tbody>
             <form action='' method='post'>
               <tr>
-                <td style ='display:none;' width='25%'>$print->user_id <input type='hidden' id='uptid' name='uptid' value='$print->user_id'></td>
+                <td style ='display:none;' width='25%'>$print->tileview_id <input type='hidden' id='uptid' name='uptid' value='$print->tileview_id'></td>
                 <td width='25%'><input type='text' id='uptname' name='uptname' value='$print->name'></td>
                 <td width='25%'><input type='text' id='uptposition' name='uptposition' value='$print->position'></td>
                 <td width='25%'><input type='text' id='uptposition' name='upt_tile_row_number' value='$print->tile_row_number'></td>
