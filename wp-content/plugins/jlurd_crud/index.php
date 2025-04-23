@@ -39,11 +39,20 @@
     public function load_assets(){
         wp_enqueue_style(
             'jlurd_custom',
-            plugin_dir_url( __FILE__ ) . '/css/jlurd_custom.css',
+            plugin_dir_url( __FILE__ ) . 'css/jlurd_custom.css',
             array(),
             1,
-            all
+            'all'
         );
+
+        wp_enqueue_script(
+            'jlurd_scripts',
+            plugin_dir_url( __FILE__ ) . 'js/jlurd_scripts.js',
+            array('jquery'),
+            1,
+            true
+        );
+
     }
  }
 
