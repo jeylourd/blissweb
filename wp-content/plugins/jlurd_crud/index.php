@@ -16,11 +16,16 @@
 
  class CounselForm{
     public function __construct(){
+        //create custom counsel post type
         add_action('init',array($this,'create_custom_counsel_profile'));
+
         //add assets (js,css,etc)
         add_action('wp_enqueue_scripts',array($this,'load_assets'));
+
+        //add shortcode
+        add_shortcode('counsel-form',array($this,'load_shortcode'));
     }
-    public function create_custom_counsel_profile(){
+    public function create_custom_counsel_profile(){ //methods
        $args = array(
             'public' => true,
             'has_archive' => true,
@@ -36,7 +41,7 @@
        );
        register_post_type('CounselForm',$args);
     }
-    public function load_assets(){
+    public function load_assets(){ //methods
         wp_enqueue_style(
             'jlurd_custom',
             plugin_dir_url( __FILE__ ) . 'css/jlurd_custom.css',
@@ -53,6 +58,9 @@
             true
         );
 
+    }
+    public function load_shortcode(){//methods
+            return 'hello shortcode is working';
     }
  }
 
