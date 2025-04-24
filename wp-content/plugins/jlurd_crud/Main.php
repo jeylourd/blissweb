@@ -9,10 +9,10 @@
  * 
  * */  
 
-//  if( !defined('ABSPATH') ){
-//     echo 'Something is not normal here';
-//     exit;
-//  }
+ if( !defined('ABSPATH') ){
+    echo 'Something is not normal here';
+    exit;
+ }
 
 define('CRUD_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('CRUD_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
@@ -23,8 +23,9 @@ function crudOperationsTable() {
   $charset_collate = $wpdb->get_charset_collate();
   $table_name1 = $wpdb->prefix . 'jlurd_tile_view_maker';
   $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
-  $sql = "CREATE TABLE `$table_name1` (
+  $sql = "CREATE TABLE IF NOT EXISTS `$table_name1` (
     `tileview_id` int NOT NULL AUTO_INCREMENT,
+    `category_id` int NOT NULL,
     `name` varchar(220) DEFAULT NULL,
     `position` varchar(220) DEFAULT NULL,
     `tile_row_number` int DEFAULT NULL,
@@ -34,18 +35,18 @@ function crudOperationsTable() {
     `modified_date` datetime NOT NULL,
     `created_by_user_id` int NOT NULL,
     `modified_by_user_id` int NOT NULL,
-    PRIMARY KEY(tileview_id)
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-    CREATE TABLE `$table_name2` (
-      `tileview_category_id` int NOT NULL AUTO_INCREMENT,
-      `tileview_id` int(15) DEFAULT NULL,
-      `category_name` varchar(220) DEFAULT NULL,
-      `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      `modified_date` datetime NOT NULL,
-      `created_by_user_id` int NOT NULL,
-      `modified_by_user_id` int NOT NULL,
-      PRIMARY KEY(tileview_category_id)
-      ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+    PRIMARY KEY (`tileview_id`)
+  ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+    CREATE TABLE IF NOT EXISTS `$table_name2` (
+  `tileview_category_id` int NOT NULL AUTO_INCREMENT,
+  `category_name` varchar(220) DEFAULT NULL,
+  `cat_description` varchar(1000) NOT NULL,
+  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified_date` datetime NOT NULL,
+  `created_by_user_id` int NOT NULL,
+  `modified_by_user_id` int NOT NULL,
+  PRIMARY KEY (`tileview_category_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
   ";
 
   if ($wpdb->get_var("SHOW TABLES LIKE '$table_name1'") != $table_name1) {
@@ -75,6 +76,7 @@ function load_custom_css_js() {
 }
 add_action('admin_menu', 'addAdminPageContent');
 add_action( 'admin_enqueue_scripts', 'load_custom_css_js' );
+add_action( 'wp_enqueue_scripts', 'load_custom_css_js' );
 function addAdminPageContent() {
     add_menu_page(
                     'JLURD Tile View Maker', //WP  tab title
@@ -84,10 +86,10 @@ function addAdminPageContent() {
                     'crudAdminPage' );
     add_submenu_page(
                       'new-entry', //name sa page nga parent
-                      'Categories', 
+                      'Profile Contents', 
                       'Tile View Category', 
                       'manage_options', 
-                      'view-categories', 
+                      'view-profiles', 
                       'ViewtileCategory' 
                     );   
     wp_enqueue_media(); // Make sure media scripts are loaded
@@ -101,3 +103,9 @@ function crudAdminPage() {
 function ViewtileCategory(){ 
     require_once(CRUD_PLUGIN_PATH.'/templates/tileviewmaker_category.php');
 }
+
+function tileViewMakerDisplay($attr){
+
+  require_once(CRUD_PLUGIN_PATH.'templates/shortcode.php');             
+}
+add_shortcode('tileViewDisplay', 'tileViewMakerDisplay');
