@@ -18,7 +18,7 @@ define('CRUD_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('CRUD_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 register_activation_hook(__FILE__, 'crudOperationsTable1',);
 register_activation_hook(__FILE__, 'crudOperationsTable2',);
-register_deactivation_hook( __FILE__, 'deactivate_crud_plugin_function' );
+//register_deactivation_hook( __FILE__, 'deactivate_crud_plugin_function' );
 function crudOperationsTable1() {
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
@@ -28,7 +28,7 @@ function crudOperationsTable1() {
     `category_id` int NOT NULL,
     `name` varchar(220) DEFAULT NULL,
     `position` varchar(220) DEFAULT NULL,
-    `tile_row_number` int DEFAULT NULL,
+    `bionote_link` varchar(220) DEFAULT NULL,
     `tile_column_number` int DEFAULT NULL,
     `featured_photo` varchar(220) DEFAULT NULL,
     `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -64,13 +64,11 @@ function crudOperationsTable2() {
   }
 }
 
-function deactivate_crud_plugin_function() {
-  global $wpdb;
-  $table_name1 = $wpdb->prefix . 'jlurd_tile_view_maker';
-  $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
-  $sql = "DROP TABLE IF EXISTS $table_name1, $table2";
-  $wpdb->query($sql);
-}
+// function deactivate_crud_plugin_function() {
+//   global $wpdb;
+//   $sql = "DROP TABLE `wp_jlurd_tileview_maker_category`, `wp_jlurd_tile_view_maker`";
+//   $wpdb->query($sql);
+// }
 
 
 function load_custom_css_js() {
@@ -103,6 +101,7 @@ function addAdminPageContent() {
                       'ViewtileCategory' 
                     );   
     wp_enqueue_media(); // Make sure media scripts are loaded
+    wp_dropdown_pages( array( 'name' => 'russ_options[page_id]', 'selected' => $options['page_id'] ) ); // for select page dropdown
 
 }
 function crudAdminPage() {

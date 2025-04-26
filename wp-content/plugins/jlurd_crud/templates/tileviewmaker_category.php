@@ -11,11 +11,11 @@ if (isset($_POST['newsubmit'])) {
     $user_id = get_current_user_id();
     $name = $_POST['newname'];
     $position =  nl2br(htmlentities($_POST['newposition'], ENT_QUOTES, 'UTF-8'));
-    $tile_row_number = $_POST['tile_row_number'];
+    $bionote_link = $_POST['bionote_link'];
     $tile_column_number = $_POST['tile_column_number'];
     $my_media_field = $_POST['my_media_field'];
     $category_id = $_POST['category_id'];
-    $wpdb->query("INSERT INTO $table_name(name,position,tile_row_number,tile_column_number,featured_photo,created_by_user_id,category_id) VALUES('$name','$position','$tile_row_number','$tile_column_number','$my_media_field','$user_id','$category_id')");
+    $wpdb->query("INSERT INTO $table_name(name,position,bionote_link,tile_column_number,featured_photo,created_by_user_id,category_id) VALUES('$name','$position','$bionote_link','$tile_column_number','$my_media_field','$user_id','$category_id')");
     echo "<script>location.replace('admin.php?page=view-profiles');</script>";
   }
 
@@ -24,12 +24,12 @@ if (isset($_POST['newsubmit'])) {
     $id = $_POST['uptid'];
     $name = $_POST['uptname'];
     $position = nl2br(htmlentities( $_POST['uptposition'], ENT_QUOTES, 'UTF-8'));
-    $upt_tile_row_number = $_POST['upt_tile_row_number'];
+    $upt_bionote_link = $_POST['upt_bionote_link'];
     $upt_tile_column_number = $_POST['upt_tile_column_number'];
     $upt_position_featured_photo = $_POST['upt_position_featured_photo'];
     $upt_category_id = $_POST['upt_category_id'];
     $today = date ('Y-m-d H:i:s');
-    $wpdb->query("UPDATE $table_name SET name='$name',category_id='$upt_category_id',position='$position',tile_row_number='$upt_tile_row_number',tile_column_number='$upt_tile_column_number',featured_photo='$upt_position_featured_photo',modified_date='$today',modified_by_user_id='$user_id'  WHERE tileview_id='$id'");
+    $wpdb->query("UPDATE $table_name SET name='$name',category_id='$upt_category_id',position='$position',bionote_link='$upt_bionote_link',tile_column_number='$upt_tile_column_number',featured_photo='$upt_position_featured_photo',modified_date='$today',modified_by_user_id='$user_id'  WHERE tileview_id='$id'");
     echo "<script>location.replace('admin.php?page=view-profiles');</script>";
   }
 
@@ -63,8 +63,24 @@ if (isset($_POST['newsubmit'])) {
         <form action="" method="post">
                 <input type="text" class ="form-control input-sm" id="newname" name="newname" placeholder = "Full Name" required><br>
                 <textarea style ="height:150px;" type="text" class ="form-control input-sm" id="newposition" name="newposition" placeholder = "Position" required></textarea><br>
-                <input type="text" class ="form-control input-sm" id="tile_row_number" name="tile_row_number" placeholder = "Row No. Arrangement"><br>
+              
+                <select name="bionote_link"> 
+                  <option selected="selected" disabled="disabled" value=""><?php echo esc_attr( __( 'Select page' ) ); ?></option> 
+                  <?php
+                      $selected_page = get_option( 'option_key' );
+                      $pages = get_pages(); 
+                      foreach ( $pages as $page ) {
+                          $option = '<option value="' . $page->ID . '" ';
+                          $option .= ( $page->ID == $selected_page ) ? 'selected="selected"' : '';
+                          $option .= '>';
+                          $option .= $page->post_title;
+                          $option .= '</option>';
+                          echo $option;
+                      }
+                  ?>
+              </select>
                 <input type="text" class ="form-control input-sm" id="tile_column_number" name="tile_column_number" placeholder = "Column No. Arrangement">
+
                 <img src = "" height="120px" id ="img_url">
                 <input type="text" id="my_media_field" name="my_media_field" style ="display:none;">
                 <label>Select Category</label>
@@ -101,7 +117,7 @@ if (isset($_POST['newsubmit'])) {
           
           <th width="20%">Name</th>
           <th width="25%">Position</th>
-          <th width="7%">Row No.</th>
+          <th width="7%">Bionote</th>
           <th width="7%">Column No.</th>
           <th width="25%">Category</th>
           <th width="25%">Actions</th>
@@ -114,7 +130,7 @@ if (isset($_POST['newsubmit'])) {
                                                 profiles.tileview_id 
                                                 ,profiles.name 
                                                 ,profiles.position 
-                                                ,profiles.tile_row_number 
+                                                ,profiles.bionote_link 
                                                 ,profiles.tile_column_number 
                                                 ,profiles.featured_photo 
                                                 ,cat.category_name
@@ -127,7 +143,7 @@ if (isset($_POST['newsubmit'])) {
                 <td  style ='display:none;'>$print->tileview_id</td>
                 <td width='20%'><img src = '$print->featured_photo' height='120px'><br>$print->name</td>
                 <td width='25%'>$print->position</td>
-                <td width='7%'>$print->tile_row_number</td>
+                <td width='7%'>$print->bionote_link</td>
                 <td width='7%'>$print->tile_column_number</td>
                 <td width='25%'>$print->category_name</td>
                 <td width='25%'><a href='admin.php?page=view-profiles&upt=$print->tileview_id'><button type='button' class ='btn btn-warning btn-sm'><i class='bi bi-pencil'></i></button></a> <a href='admin.php?page=view-profiles&del=$print->tileview_id'><button type='button' class ='btn btn-danger btn-sm'><i class='bi bi-trash'></i></button></a></td>
@@ -153,6 +169,19 @@ if (isset($_POST['newsubmit'])) {
             $data_cat .= '<option value ="'.$print_category->tileview_category_id.'">'.$print_category->category_name.'</option>';
             
         } 
+
+        
+        $selected_page = get_option( 'option_key' );
+        $pages = get_pages(); 
+        foreach ( $pages as $page ) {
+            $option = '<option value="' . $page->ID . '" ';
+            $option .= ( $page->ID == $selected_page ) ? 'selected="selected"' : '';
+            $option .= '>';
+            $option .= $page->post_title;
+            $option .= '</option>';
+            echo $option;
+        }
+
        
         echo "
         <table class='wp-list-table widefat striped'>
@@ -161,7 +190,7 @@ if (isset($_POST['newsubmit'])) {
               <th style ='display:none;'  width='25%'>ID</th>
               <th width='25%'>Name</th>
                <th width='25%'>Position</th>
-               <th width='25%'>Row No.</th>
+               <th width='25%'>Bionote</th>
                <th width='25%'>Column No.</th>
                <th width='25%'>Category</th>
                <th width='25%'>Featured Photo</th>
@@ -174,7 +203,7 @@ if (isset($_POST['newsubmit'])) {
                 <td style ='display:none;' width='25%'>$print->tileview_id <input type='hidden' id='uptid' name='uptid' value='$print->tileview_id'></td>
                 <td width='25%'><input type='text' id='uptname' name='uptname' value='$print->name'></td>
                 <td width='25%'><textarea textarea style ='height:150px;' id='uptposition' name='uptposition' >$print->position</textarea></td>
-                <td width='25%'><input type='text' id='uptposition' name='upt_tile_row_number' value='$print->tile_row_number'></td>
+                <td width='25%'> <select name='upt_bionote_link'>".$option."</select></td>
                 <td width='25%'><input type='text' id='uptposition' name='upt_tile_column_number' value='$print->tile_column_number'></td>
                 <td><select class ='form-control' id='upt_category_id' name='upt_category_id'>".$data_cat."</select></td>
                 <td width='25%'><img src = '$print->featured_photo' height='120px' id ='upt_img_url'><input type='text' id='upt_position_featured_photo' name='upt_position_featured_photo' value='$print->featured_photo' style ='display:none;'><button type='button' id='update-my-media-button' class='button'>Select Media</button></td>
