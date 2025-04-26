@@ -41,7 +41,4 @@ jQuery(document).ready(function($) {
 
         media_uploader.open();
     });
-
-
-    
 });

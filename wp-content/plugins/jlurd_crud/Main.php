@@ -16,13 +16,13 @@
 
 define('CRUD_PLUGIN_URL', plugin_dir_url( __FILE__ ));
 define('CRUD_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-register_activation_hook(__FILE__, 'crudOperationsTable',);
+register_activation_hook(__FILE__, 'crudOperationsTable1',);
+register_activation_hook(__FILE__, 'crudOperationsTable2',);
 register_deactivation_hook( __FILE__, 'deactivate_crud_plugin_function' );
-function crudOperationsTable() {
+function crudOperationsTable1() {
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
   $table_name1 = $wpdb->prefix . 'jlurd_tile_view_maker';
-  $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
   $sql = "CREATE TABLE IF NOT EXISTS `$table_name1` (
     `tileview_id` int NOT NULL AUTO_INCREMENT,
     `category_id` int NOT NULL,
@@ -36,8 +36,18 @@ function crudOperationsTable() {
     `created_by_user_id` int NOT NULL,
     `modified_by_user_id` int NOT NULL,
     PRIMARY KEY (`tileview_id`)
-  ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
-    CREATE TABLE IF NOT EXISTS `$table_name2` (
+  ) {$charset_collate}";
+
+  if ($wpdb->get_var("SHOW TABLES LIKE '$table_name1'") != $table_name1) {
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+  }
+}
+function crudOperationsTable2() {
+  global $wpdb;
+  $charset_collate = $wpdb->get_charset_collate();
+  $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
+  $sql = "CREATE TABLE IF NOT EXISTS `$table_name2` (
   `tileview_category_id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(220) DEFAULT NULL,
   `cat_description` varchar(1000) NOT NULL,
@@ -46,10 +56,9 @@ function crudOperationsTable() {
   `created_by_user_id` int NOT NULL,
   `modified_by_user_id` int NOT NULL,
   PRIMARY KEY (`tileview_category_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
-  ";
+){$charset_colate}";
 
-  if ($wpdb->get_var("SHOW TABLES LIKE '$table_name1'") != $table_name1) {
+  if ($wpdb->get_var("SHOW TABLES LIKE '$table_name2'") != $table_name2) {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
   }
@@ -57,8 +66,9 @@ function crudOperationsTable() {
 
 function deactivate_crud_plugin_function() {
   global $wpdb;
-  $table_name = 'jlurd_tile_view_maker';
-  $sql = "DROP TABLE IF EXISTS $table_name";
+  $table_name1 = $wpdb->prefix . 'jlurd_tile_view_maker';
+  $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
+  $sql = "DROP TABLE IF EXISTS $table_name1, $table2";
   $wpdb->query($sql);
 }
 
