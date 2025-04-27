@@ -117,7 +117,7 @@ if (isset($_POST['newsubmit'])) {
           
           <th width="20%">Name</th>
           <th width="25%">Position</th>
-          <th width="7%">Bionote</th>
+          <th width="7%">Bionote Link</th>
           <th width="7%">Column No.</th>
           <th width="25%">Category</th>
           <th width="25%">Actions</th>
@@ -127,23 +127,29 @@ if (isset($_POST['newsubmit'])) {
        
         <?php
           $result = $wpdb->get_results("SELECT 
-                                                profiles.tileview_id 
+                                                 profiles.tileview_id 
                                                 ,profiles.name 
                                                 ,profiles.position 
                                                 ,profiles.bionote_link 
                                                 ,profiles.tile_column_number 
                                                 ,profiles.featured_photo 
+                                                ,pages.post_title
+                                                ,pages.guid
+                                                ,pages.ID
                                                 ,cat.category_name
                                         FROM  wp_jlurd_tile_view_maker as profiles, 
-                                            wp_jlurd_tileview_maker_category as cat 
-                                        WHERE cat.tileview_category_id = profiles.category_id");
+                                            wp_jlurd_tileview_maker_category as cat ,
+                                            wp_posts as pages
+                                        WHERE cat.tileview_category_id = profiles.category_id ");
+                                        
           foreach ($result as $print) {
+           
             echo "
               <tr>
-                <td  style ='display:none;'>$print->tileview_id</td>
+                <td  style ='display:none;'>".$print->tileview_id."</td>
                 <td width='20%'><img src = '$print->featured_photo' height='120px'><br>$print->name</td>
                 <td width='25%'>$print->position</td>
-                <td width='7%'>$print->bionote_link</td>
+                <td width='7%'>$print->post_title</td>
                 <td width='7%'>$print->tile_column_number</td>
                 <td width='25%'>$print->category_name</td>
                 <td width='25%'><a href='admin.php?page=view-profiles&upt=$print->tileview_id'><button type='button' class ='btn btn-warning btn-sm'><i class='bi bi-pencil'></i></button></a> <a href='admin.php?page=view-profiles&del=$print->tileview_id'><button type='button' class ='btn btn-danger btn-sm'><i class='bi bi-trash'></i></button></a></td>
@@ -161,25 +167,28 @@ if (isset($_POST['newsubmit'])) {
         $result = $wpdb->get_results("SELECT * FROM $table_name WHERE tileview_id='$upt_id'");
         foreach($result as $print) {
           $name = $print->name;
-          $email = $print->email;
+          $selected_page_id = $print->bionote_link;
+          var_dump($selected_page_id);
         }
-
+        $data_cat = '';
         $category = $wpdb->get_results("SELECT * FROM $table_name2");
         foreach ($category as $print_category){
             $data_cat .= '<option value ="'.$print_category->tileview_category_id.'">'.$print_category->category_name.'</option>';
             
         } 
-
+        $data_page_link = '';
         
         $selected_page = get_option( 'option_key' );
         $pages = get_pages(); 
+        //var_dump($pages);
         foreach ( $pages as $page ) {
-            $option = '<option value="' . $page->ID . '" ';
-            $option .= ( $page->ID == $selected_page ) ? 'selected="selected"' : '';
-            $option .= '>';
-            $option .= $page->post_title;
-            $option .= '</option>';
-            echo $option;
+            if($page->ID == $selected_page_id){
+              $selected= 'selected';
+            }else{
+              $selected= '';
+            }
+            
+            $data_page_link .= '<option '.$selected.' value ="'.$page->ID.'">'.$page->post_title.'</option>';
         }
 
        
@@ -190,7 +199,7 @@ if (isset($_POST['newsubmit'])) {
               <th style ='display:none;'  width='25%'>ID</th>
               <th width='25%'>Name</th>
                <th width='25%'>Position</th>
-               <th width='25%'>Bionote</th>
+               <th width='25%'>Bionote Link</th>
                <th width='25%'>Column No.</th>
                <th width='25%'>Category</th>
                <th width='25%'>Featured Photo</th>
@@ -200,10 +209,10 @@ if (isset($_POST['newsubmit'])) {
           <tbody>
             <form action='' method='post'>
               <tr>
-                <td style ='display:none;' width='25%'>$print->tileview_id <input type='hidden' id='uptid' name='uptid' value='$print->tileview_id'></td>
+                <td style ='display:none;' width='25%'>".$print->tileview_id." <input type='hidden' id='uptid' name='uptid' value='".$print->tileview_id."'></td>
                 <td width='25%'><input type='text' id='uptname' name='uptname' value='$print->name'></td>
                 <td width='25%'><textarea textarea style ='height:150px;' id='uptposition' name='uptposition' >$print->position</textarea></td>
-                <td width='25%'> <select name='upt_bionote_link'>".$option."</select></td>
+                <td width='25%'> <select class ='form-control' name='upt_bionote_link'>".$data_page_link."</select></td>
                 <td width='25%'><input type='text' id='uptposition' name='upt_tile_column_number' value='$print->tile_column_number'></td>
                 <td><select class ='form-control' id='upt_category_id' name='upt_category_id'>".$data_cat."</select></td>
                 <td width='25%'><img src = '$print->featured_photo' height='120px' id ='upt_img_url'><input type='text' id='upt_position_featured_photo' name='upt_position_featured_photo' value='$print->featured_photo' style ='display:none;'><button type='button' id='update-my-media-button' class='button'>Select Media</button></td>

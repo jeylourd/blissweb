@@ -101,7 +101,6 @@ function addAdminPageContent() {
                       'ViewtileCategory' 
                     );   
     wp_enqueue_media(); // Make sure media scripts are loaded
-    wp_dropdown_pages( array( 'name' => 'russ_options[page_id]', 'selected' => $options['page_id'] ) ); // for select page dropdown
 
 }
 function crudAdminPage() {
