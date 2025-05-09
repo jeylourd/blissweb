@@ -6,7 +6,7 @@
         $category_name = $_POST['category_name'];
         $catdescription = $_POST['catdescription'];
    
-        $my_media_field = $_POST['my_media_field'];
+        //$my_media_field = $_POST['my_media_field'];
         $wpdb->query("INSERT INTO $table_name(category_name,cat_description,created_by_user_id) VALUES('$category_name','$catdescription','$user_id')");
         echo "<script>location.replace('admin.php?page=new-entry');</script>";
       }
@@ -30,7 +30,7 @@
 ?>
 
 <div class="container-fluid p-5 bg-warning text-white text-center">
-  <h1 style ="color:white;">JLURD Tile View Maker</h1>
+  <h1 style ="color:white;">Tile View Maker</h1>
   <p>Version 1.0.0</p> 
 </div>
 <br>
@@ -75,10 +75,11 @@
      <thead>
        <tr>
          
-         <th width="25%">Category Name</th>
-         <th width="25%">Description</th>
-         <th width="25%">Created Date</th>
-         <th width="25%">Actions</th>
+         <th>Category Name</th>
+         <th>Description</th>
+         <th>Created Date</th>
+		     <th>Shortcode</th>
+         <th>Actions</th>
        </tr>
      </thead>
      <tbody>
@@ -88,10 +89,11 @@
          foreach ($result as $print) {
            echo "
              <tr>
-               <td width='25%' style ='display:none;'>$print->tileview_category_id</td>
-               <td width='25%'>$print->category_name</td>
-               <td width='25%'>$print->cat_description</td>
-               <td width='25%'>".date('F d Y H:m:sa',strtotime($print->created_date))."</td>
+               <td ' style ='display:none;'>$print->tileview_category_id</td>
+               <td >$print->category_name</td>
+               <td>$print->cat_description</td>
+               <td>".date('F d Y H:m:sa',strtotime($print->created_date))."</td>
+			   <td>[tileViewDisplay category_id ='".$print->tileview_category_id."']</td>
                <td width='25%'><a href='admin.php?page=new-entry&view=$print->tileview_category_id' class ='btn btn-warning btn-sm'>View <i style ='background-color:blue !important;color:white;border-radius:7px 7px 7px 7px' class='bi bi-info'></i></a> <a href='admin.php?page=new-entry&upt=$print->tileview_category_id' class ='btn btn-warning btn-sm'><i class='bi bi-pencil'></i></a> <a href='admin.php?page=new-entry&del=$print->tileview_category_id'><button type='button' class ='btn btn-danger btn-sm'><i class='bi bi-trash'></i></button></a></td>
              </tr>
            ";

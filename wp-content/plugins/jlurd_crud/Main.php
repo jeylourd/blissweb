@@ -24,17 +24,17 @@ function crudOperationsTable1() {
   $charset_collate = $wpdb->get_charset_collate();
   $table_name1 = $wpdb->prefix . 'jlurd_tile_view_maker';
   $sql = "CREATE TABLE IF NOT EXISTS `$table_name1` (
-    `tileview_id` int NOT NULL AUTO_INCREMENT,
-    `category_id` int NOT NULL,
+    `tileview_id` int(11) NOT NULL AUTO_INCREMENT,
+    `category_id` int(11) NOT NULL,
     `name` varchar(220) DEFAULT NULL,
-    `position` varchar(220) DEFAULT NULL,
-    `bionote_link` varchar(220) DEFAULT NULL,
-    `tile_column_number` int DEFAULT NULL,
+    `position` varchar(2000) DEFAULT NULL,
+    `bionote_link` int(220) DEFAULT NULL,
+    `tile_column_number` int(11) DEFAULT NULL,
     `featured_photo` varchar(220) DEFAULT NULL,
-    `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_date` datetime NOT NULL,
-    `created_by_user_id` int NOT NULL,
-    `modified_by_user_id` int NOT NULL,
+    `created_by_user_id` int(11) NOT NULL,
+    `modified_by_user_id` int(11) NOT NULL,
     PRIMARY KEY (`tileview_id`)
   ) {$charset_collate}";
 
@@ -48,15 +48,15 @@ function crudOperationsTable2() {
   $charset_collate = $wpdb->get_charset_collate();
   $table_name2 = $wpdb->prefix . 'jlurd_tileview_maker_category';
   $sql = "CREATE TABLE IF NOT EXISTS `$table_name2` (
-  `tileview_category_id` int NOT NULL AUTO_INCREMENT,
-  `category_name` varchar(220) DEFAULT NULL,
-  `cat_description` varchar(1000) NOT NULL,
-  `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `modified_date` datetime NOT NULL,
-  `created_by_user_id` int NOT NULL,
-  `modified_by_user_id` int NOT NULL,
-  PRIMARY KEY (`tileview_category_id`)
-){$charset_colate}";
+          `tileview_category_id` int(11) NOT NULL AUTO_INCREMENT,
+          `category_name` varchar(220) DEFAULT NULL,
+          `cat_description` varchar(1000) NOT NULL,
+          `created_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `modified_date` datetime NOT NULL,
+          `created_by_user_id` int(11) NOT NULL,
+          `modified_by_user_id` int(11) NOT NULL,
+          PRIMARY KEY (`tileview_category_id`)
+        ){$charset_colate}";
 
   if ($wpdb->get_var("SHOW TABLES LIKE '$table_name2'") != $table_name2) {
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -87,8 +87,8 @@ add_action( 'admin_enqueue_scripts', 'load_custom_css_js' );
 add_action( 'wp_enqueue_scripts', 'load_custom_css_js' );
 function addAdminPageContent() {
     add_menu_page(
-                    'JLURD Tile View Maker', //WP  tab title
-                    'JLURD Tile View Maker', //WP side bar menu title
+                    'Tile View Maker', //WP  tab title
+                    'Tile View Maker', //WP side bar menu title
                     'manage_options', 
                     'new-entry', 
                     'crudAdminPage' );
